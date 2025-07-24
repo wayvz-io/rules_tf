@@ -4,7 +4,7 @@ load("@rules_tf//tf/rules:tf-gen-doc.bzl", _tf_gen_doc = "tf_gen_doc" )
 load("@rules_tf//tf/rules:tf-gen-versions.bzl", "tf_gen_versions")
 load("@rules_tf//tf/rules:tf-providers-versions.bzl", _tf_providers_versions = "tf_providers_versions")
 load("@rules_tf//tf/rules:tf-lint.bzl", "tf_lint_test")
-load("@rules_tf//tf/rules:tf-module.bzl", _tf_module = "tf_module", "tf_module_deps", "tf_artifact", "tf_validate_test", _tf_format = "tf_format", "tf_format_test")
+load("@rules_tf//tf/rules:tf-module.bzl", _tf_module = "tf_module", "tf_module_deps", "tf_artifact", "tf_validate_test", _tf_format = "tf_format", "tf_format_test", "tf_versions_check_test")
 
 bzl_files = [
     "**/*.bzl",
@@ -24,7 +24,28 @@ def tf_module(name,
               experiments = [],
               visibility= ["//visibility:public"],
               tags = [],
-              skip_validation = False):
+              skip_validation = False,
+              disable_version_lint = False):
+    """Creates a Terraform module with associated build and test targets.
+    
+    Args:
+        name: Name of the module
+        providers_versions: Label of tf_providers_versions target defining provider versions
+        data: Additional data files to include in the module
+        size: Test size (small, medium, large)
+        providers: List of provider names or dict of provider configurations
+        tflint_config: Label of tflint configuration file
+        tflint_extra_args: Extra arguments to pass to tflint
+        deps: Dependencies on other tf_module targets
+        experiments: List of Terraform experiments to enable
+        visibility: Visibility of the generated targets
+        tags: Tags to apply to all generated targets
+        skip_validation: If True, skip creating the validate test target
+        disable_version_lint: If True, disable the versions_check test. By default,
+                             if versions.tf.json exists and providers are specified,
+                             a versions_check test is created to ensure the file
+                             stays synchronized with the BUILD file.
+    """
 
     # Handle both string list and dict formats for providers
     providers_list = []
@@ -94,6 +115,26 @@ def tf_module(name,
             size = size,
             tags = tags,
         )
+    
+    # Add versions.tf.json validation if:
+    # - Not explicitly disabled
+    # - Providers are specified
+    # - versions.tf.json file exists in the module
+    if not disable_version_lint and (providers_list or providers_dict_json):
+        # Check if versions.tf.json exists
+        versions_file_exists = len(native.glob(["versions.tf.json"])) > 0
+        
+        if versions_file_exists:
+            tf_versions_check_test(
+                name = "versions_check",
+                module = ":module",
+                providers = providers_list,
+                providers_dict_json = providers_dict_json,
+                providers_versions = providers_versions,
+                experiments = experiments,
+                size = "small",
+                tags = tags,
+            )
 
 
     pkg_tar(

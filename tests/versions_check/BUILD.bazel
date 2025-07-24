@@ -1,0 +1,39 @@
+"""Tests for the versions_check functionality."""
+
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+
+# Test 1: Verify versions_check target is created by default
+build_test(
+    name = "test_versions_check_target_exists",
+    targets = [
+        "//bazel/rules_tf/tests/versions_check/test_modules/with_providers:versions_check",
+    ],
+)
+
+# Test 2: Verify versions_check target is NOT created when disable_version_lint=True  
+sh_test(
+    name = "test_versions_check_not_created_when_disabled",
+    srcs = ["test_target_not_exists.sh"],
+    args = ["//bazel/rules_tf/tests/versions_check/test_modules/lint_disabled:versions_check"],
+    size = "small",
+)
+
+# Test 3: Verify versions_check target is NOT created when no versions.tf.json exists
+sh_test(
+    name = "test_versions_check_not_created_when_no_file",
+    srcs = ["test_target_not_exists.sh"],
+    args = ["//bazel/rules_tf/tests/versions_check/test_modules/no_versions_file:versions_check"],
+    size = "small",
+)
+
+# Test 3: Create a negative test runner that expects tests to fail
+sh_test(
+    name = "test_versions_check_fails_when_outdated",
+    srcs = ["run_expecting_failure.sh"],
+    args = [
+        "//bazel/rules_tf/tests/versions_check/test_modules/outdated:versions_check",
+        "versions.tf.json is out of date",
+    ],
+    size = "small",
+    tags = ["manual"],  # Don't run in regular test suite
+)

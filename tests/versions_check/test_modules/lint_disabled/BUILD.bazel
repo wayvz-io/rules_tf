@@ -1,0 +1,16 @@
+load("@rules_tf//tf:def.bzl", "tf_module", "tf_providers_versions")
+
+tf_providers_versions(
+    name = "test_versions",
+    tf_version = ">= 1.0",
+    providers = {
+        "null": "hashicorp/null:3.0.0",
+    },
+)
+
+tf_module(
+    name = "lint_disabled",
+    providers = ["null"],
+    providers_versions = ":test_versions",
+    disable_version_lint = True,  # This should NOT create versions_check target
+)

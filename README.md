@@ -75,8 +75,15 @@ tf_module(
         "//tf/modules/mod-a",
     ],
     providers_versions = ":providers",
+    # disable_version_lint = True,  # Set to true to disable versions.tf.json validation
 )
 ```
+
+The `tf_module` macro automatically creates several test targets:
+- `:format` - Checks if Terraform files are properly formatted
+- `:lint` - Runs tflint on the module
+- `:validate` - Validates the Terraform configuration (unless `skip_validation = True`)
+- `:versions_check` - Ensures `versions.tf.json` matches the BUILD file (created automatically when versions.tf.json exists, unless `disable_version_lint = True`)
 
 #### Provider Configuration Aliases
 
@@ -178,7 +185,7 @@ tf_module(
 )
 ```
 
-1. Generating versions.tf.json files
+1. Generating and validating versions.tf.json files
 
 Terraform linter by default requires that all providers used by a module
 are versioned. It is possible to generate a versions.tf.json file by running
@@ -218,6 +225,26 @@ or generate all files of a workspace:
 ``` bash
 bazel cquery 'kind(tf_gen_versions, //...)' --output files | xargs -n1 bash
 ```
+
+**Version Validation**: If your module has a `versions.tf.json` file, `tf_module` automatically creates a `versions_check` test that ensures it stays in sync with your BUILD file. If the test fails:
+
+```bash
+# The error message will show you exactly what to run:
+bazel run //path/to/module:gen-tf-versions
+```
+
+To disable version validation for a specific module:
+
+```python
+tf_module(
+    name = "my-module",
+    providers = ["random"],
+    disable_version_lint = True,  # Disables versions.tf.json validation
+    ...
+)
+```
+
+Note: Modules without a `versions.tf.json` file won't have version validation enabled automatically.
 
 1. Generating terraform doc files
 
