@@ -27,7 +27,7 @@ def tf_module(name,
               skip_validation = False,
               disable_version_lint = False):
     """Creates a Terraform module with associated build and test targets.
-    
+
     Args:
         name: Name of the module
         providers_versions: Label of tf_providers_versions target defining provider versions
@@ -50,7 +50,7 @@ def tf_module(name,
     # Handle both string list and dict formats for providers
     providers_list = []
     providers_dict_json = ""
-    
+
     if type(providers) == type([]):
         # String list format (legacy)
         providers_list = providers
@@ -115,15 +115,15 @@ def tf_module(name,
             size = size,
             tags = tags,
         )
-    
+
     # Add versions.tf.json validation if:
     # - Not explicitly disabled
     # - Providers are specified
     # - versions.tf.json file exists in the module
     if not disable_version_lint and (providers_list or providers_dict_json):
         # Check if versions.tf.json exists
-        versions_file_exists = len(native.glob(["versions.tf.json"])) > 0
-        
+        versions_file_exists = len(native.glob(["versions.tf.json"], allow_empty = True)) > 0
+
         if versions_file_exists:
             tf_versions_check_test(
                 name = "versions_check",
@@ -134,6 +134,7 @@ def tf_module(name,
                 experiments = experiments,
                 size = "small",
                 tags = tags,
+                visibility = visibility,
             )
 
 

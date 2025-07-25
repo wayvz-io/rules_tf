@@ -37,7 +37,7 @@ jobs:
         uses: yuyawk/github-actions/install-bazelisk@v1
 
       - name: Test
-        run: bazel query "tests(//...)" | xargs -n1 bazel test
+        run: bazel test //...
         working-directory: tests/bcr
 
       - name: Test run fmt

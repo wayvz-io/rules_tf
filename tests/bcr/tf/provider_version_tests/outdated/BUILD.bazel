@@ -5,12 +5,13 @@ tf_providers_versions(
     tf_version = ">= 1.0",
     providers = {
         "null": "hashicorp/null:3.0.0",
+        "random": "hashicorp/random:3.1.0",
     },
 )
 
 tf_module(
-    name = "with_providers",
-    providers = ["null"],
+    name = "outdated",
+    providers = ["null", "random"],  # BUILD says null + random
     providers_versions = ":test_versions",
-    visibility = ["//bazel/rules_tf/tests/versions_check:__pkg__"],
+    tags = ["manual"],  # This module's versions_check should fail - only run when explicitly requested
 )
