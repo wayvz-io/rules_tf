@@ -134,9 +134,4 @@ toolchain(
   toolchain_type = "@rules_tf//:tflint_toolchain_type",
   visibility = ["//visibility:public"],
 )
-
-alias(
-    name = "tflint",
-    actual = "@{toolchain_repo}//:runtime",
-)
 """

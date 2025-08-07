@@ -80,13 +80,22 @@ load("@rules_tf//tf:toolchains.bzl", "tf_toolchain")
 package(default_visibility = ["//visibility:public"])
     """
 
-    for repo in ctx.attr.tflint_repos:
+    for i, repo in enumerate(ctx.attr.tflint_repos):
         chunk = _tflint_declare_toolchain_chunk.format(
             toolchain_repo = repo,
             os = ctx.attr.os,
             arch = ctx.attr.arch,
         )
         content += chunk
+
+        # Only create alias for the first repository
+        if i == 0:
+            content += """
+alias(
+    name = "tflint",
+    actual = "@{}//:runtime",
+)
+""".format(repo)
 
     for repo in ctx.attr.tfdoc_repos:
         chunk = _tfdoc_declare_toolchain_chunk.format(

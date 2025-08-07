@@ -1,0 +1,1 @@
+# Empty outputs.tf for test module

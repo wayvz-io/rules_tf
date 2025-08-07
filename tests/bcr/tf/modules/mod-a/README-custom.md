@@ -14,10 +14,7 @@
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_a2ndmodule"></a> [a2ndmodule](#module\_a2ndmodule) | ../../modules/mod-a | n/a |
-| <a name="module_amodule"></a> [amodule](#module\_amodule) | ../../modules/mod-a | n/a |
+No modules.
 
 ## Resources
 
@@ -29,12 +26,11 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_input_var"></a> [input\_var](#input\_input\_var) | an input var | `string` | `"foobar"` | no |
+| <a name="input_a_string"></a> [a\_string](#input\_a\_string) | an input string | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_mod_outputs"></a> [mod\_outputs](#output\_mod\_outputs) | output module's outputs |
-| <a name="output_my_output"></a> [my\_output](#output\_my\_output) | output the input var |
+| <a name="output_strings"></a> [strings](#output\_strings) | return a map of strings |
 <!-- END_TF_DOCS -->

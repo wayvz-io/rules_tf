@@ -12,12 +12,12 @@ tf_providers_versions(
 
 tf_format(
     name = "tffmt",
-    modules = ["//{}/{}".format(package_name(), m) for m in subpackages(include = ["**/*"])],
+    modules = ["//{}/{}".format(package_name(), m) for m in subpackages(include = ["**/*"]) if not (m == "provider_version_tests" or m.startswith("provider_version_tests/"))],
 )
 
 tf_gen_doc(
     name = "tfgendoc",
-    modules = ["//{}/{}".format(package_name(), m) for m in subpackages(include = ["**/*"])],
+    modules = ["//{}/{}".format(package_name(), m) for m in subpackages(include = ["**/*"]) if not (m == "provider_version_tests" or m.startswith("provider_version_tests/"))],
 )
 
 filegroup(
@@ -37,6 +37,6 @@ filegroup(
 
 tf_gen_doc(
     name   = "custom-tfgendoc",
-    modules = ["//{}/{}".format(package_name(), m) for m in subpackages(include = ["**/*"])],
+    modules = ["//{}/{}".format(package_name(), m) for m in subpackages(include = ["**/*"]) if not (m == "provider_version_tests" or m.startswith("provider_version_tests/"))],
     config = ":tfdoc-config",
 )

@@ -1,0 +1,37 @@
+"""Tests for the versions_check functionality."""
+
+load("@bazel_skylib//rules:build_test.bzl", "build_test")
+
+# Test 1: Verify versions_check target is created by default
+build_test(
+    name = "test_versions_check_target_exists",
+    targets = [
+        "//tf/provider_version_tests/with_providers:versions_check",
+    ],
+)
+
+# Test 2: Verify versions_check target is NOT created when disable_version_lint=True  
+sh_test(
+    name = "test_versions_check_not_created_when_disabled",
+    srcs = ["test_target_not_exists.sh"],
+    args = ["//tf/provider_version_tests/lint_disabled:versions_check"],
+    size = "small",
+)
+
+# Test 3: Verify versions_check target is NOT created when no versions.tf.json exists
+sh_test(
+    name = "test_versions_check_not_created_when_no_file",
+    srcs = ["test_target_not_exists.sh"],
+    args = ["//tf/provider_version_tests/no_versions_file:versions_check"],
+    size = "small",
+)
+
+# Test 4: Verify versions_check target exists for outdated module
+# Note: The actual versions_check target will fail (as expected) because 
+# the versions.tf.json is intentionally outdated. We just verify it exists.
+build_test(
+    name = "test_versions_check_exists_for_outdated",
+    targets = [
+        "//tf/provider_version_tests/outdated:versions_check",
+    ],
+)
